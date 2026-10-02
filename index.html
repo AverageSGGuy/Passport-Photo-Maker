@@ -167,10 +167,11 @@
                 <span>Reset Scale</span>
               </button>
             </div>
-            <input type="range" id="zoom-slider" min="0.1" max="3.0" step="0.02" value="1.0" oninput="renderEditorCanvas()" class="w-full accent-ocean">
+            <!-- Slider range now starts at 0.05 to allow shrinking wide/large images as much as needed -->
+            <input type="range" id="zoom-slider" min="0.05" max="3.0" step="0.01" value="1.0" oninput="renderEditorCanvas()" class="w-full accent-ocean">
             <div class="flex justify-between text-[11px] text-gray-400 mt-1">
-              <span>0.1x (Shrink High-Res Phone Photo)</span>
-              <span>3.0x</span>
+              <span>Super Small (Wide Photos)</span>
+              <span>3.0x Zoom</span>
             </div>
           </div>
 
@@ -338,7 +339,6 @@
     let currentStep = 1;
     let originalImage = new Image();
     let selectedBgColor = '#FFFFFF';
-    let baseScale = 1.0;
     let userZoom = 1.0;
     let panX = 0, panY = 0;
     let isDragging = false, startX, startY;
@@ -459,13 +459,11 @@
 
       if (!originalImage.src || !originalImage.width) return;
 
-      // Calculate base scale to fit high-resolution phone photos automatically
-      const scaleX = spec.width / originalImage.width;
-      const scaleY = spec.height / originalImage.height;
-      baseScale = Math.max(scaleX, scaleY);
+      // Base scale fits the image width inside the canvas while maintaining true aspect ratio
+      const fitScale = Math.min(spec.width / originalImage.width, spec.height / originalImage.height);
 
       userZoom = parseFloat(document.getElementById('zoom-slider').value);
-      const effectiveScale = baseScale * userZoom;
+      const effectiveScale = fitScale * userZoom;
 
       const brightness = document.getElementById('brightness-slider').value;
       const contrast = document.getElementById('contrast-slider').value;
