@@ -12,7 +12,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google MediaPipe Selfie Segmentation (Reliable WebGL ML on GitHub Pages) -->
+  <!-- Google MediaPipe Selfie Segmentation -->
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
 
@@ -78,16 +78,16 @@
     <!-- STEP 1: UPLOAD OR TAKE PHOTO -->
     <section id="step-1" class="step-card bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100">
       <h1 class="text-2xl sm:text-3xl font-bold text-ocean mb-2">Create Your Passport Photo</h1>
-      <p class="text-gray-600 mb-6 text-sm sm:text-base">Take a picture in front of a wall with your phone or upload an existing photo.</p>
+      <p class="text-gray-600 mb-6 text-sm sm:text-base">Take a picture in front of a plain wall with your mobile phone or upload an existing photo.</p>
 
       <div class="bg-sky/20 border border-sky/50 rounded-2xl p-4 sm:p-5 mb-6 flex items-start space-x-3">
         <i data-lucide="info" class="w-6 h-6 text-ocean flex-shrink-0 mt-0.5"></i>
         <div class="text-sm text-gray-700">
-          <strong class="block text-ocean mb-1">Quick Tips for Best Results:</strong>
+          <strong class="block text-ocean mb-1">Quick Tips for Passport Approval:</strong>
           <ul class="list-disc pl-4 space-y-1">
-            <li>Stand in front of a plain wall in a brightly lit room.</li>
-            <li>Look straight into the camera with a neutral expression.</li>
-            <li>Keep hair away from face and eyes open.</li>
+            <li>Stand in front of a light wall in a well-lit room.</li>
+            <li>Look directly at the camera with a neutral facial expression.</li>
+            <li>Ensure no heavy shadows across your neck or shoulders.</li>
           </ul>
         </div>
       </div>
@@ -99,7 +99,7 @@
             <i data-lucide="upload" class="w-6 h-6"></i>
           </div>
           <span class="font-semibold text-ocean">Upload a Photo</span>
-          <span class="text-xs text-gray-500 mt-1">JPEG, PNG, HEIC up to 10MB</span>
+          <span class="text-xs text-gray-500 mt-1">JPEG, PNG, HEIC up to 15MB</span>
         </label>
 
         <button onclick="startCamera()" class="border-2 border-dashed border-tangerine/30 hover:border-tangerine bg-tangerine/5 hover:bg-tangerine/10 transition-all rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center text-center group">
@@ -107,7 +107,7 @@
             <i data-lucide="camera" class="w-6 h-6"></i>
           </div>
           <span class="font-semibold text-tangerine">Take Photo with Camera</span>
-          <span class="text-xs text-gray-500 mt-1">Use phone or laptop webcam</span>
+          <span class="text-xs text-gray-500 mt-1">Use phone or desktop camera</span>
         </button>
       </div>
 
@@ -136,18 +136,18 @@
       </div>
     </div>
 
-    <!-- STEP 2: SPECS, ALIGNMENT & SHADOW CONTROLS -->
+    <!-- STEP 2: SPECS, ALIGNMENT & LIGHTING CONTROLS -->
     <section id="step-2" class="step-card bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 hidden">
       <h2 class="text-2xl font-bold text-ocean mb-2">Align & Adjust Photo</h2>
-      <p class="text-gray-600 text-sm mb-6">Select your target country specs and fine-tune your portrait positioning.</p>
+      <p class="text-gray-600 text-sm mb-6">Select your country standards and fit your face inside the target oval guide.</p>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="space-y-5">
-          <!-- Country Preset Dropdown -->
+          <!-- Country Standard Dropdown -->
           <div>
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Country Standard</label>
             <select id="country-select" onchange="updatePresetSpecs()" class="w-full bg-canvasbg border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ocean font-medium">
-              <option value="sg" selected>🇸🇬 Singapore (ICA) — 400×514 px (Digital MyICA)</option>
+              <option value="sg" selected>🇸🇬 Singapore (ICA) — 400×514 px (MyICA Online)</option>
               <option value="us">🇺🇸 United States — 2×2 inches (600×600 px)</option>
               <option value="uk">🇬🇧 UK / Schengen — 35×45 mm (413×531 px)</option>
               <option value="ca">🇨🇦 Canada — 50×70 mm (590×826 px)</option>
@@ -158,16 +158,27 @@
             <strong>Singapore (ICA) Specs:</strong> 400x514 pixels, face covers 70-80% of frame (25-35mm chin to crown), plain white background.
           </div>
 
+          <!-- Wide-Range Zoom Controls -->
           <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Face Zoom</label>
-            <input type="range" id="zoom-slider" min="0.5" max="2.5" step="0.05" value="1" oninput="renderEditorCanvas()" class="w-full accent-ocean">
+            <div class="flex justify-between items-center mb-1">
+              <label class="text-xs font-bold text-gray-700 uppercase tracking-wider">Face Zoom & Scale</label>
+              <button onclick="resetImageTransform()" class="text-xs font-semibold text-tangerine hover:underline flex items-center space-x-1">
+                <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                <span>Reset Scale</span>
+              </button>
+            </div>
+            <input type="range" id="zoom-slider" min="0.1" max="3.0" step="0.02" value="1.0" oninput="renderEditorCanvas()" class="w-full accent-ocean">
+            <div class="flex justify-between text-[11px] text-gray-400 mt-1">
+              <span>0.1x (Shrink High-Res Phone Photo)</span>
+              <span>3.0x</span>
+            </div>
           </div>
 
           <!-- Lighting Sliders -->
           <div class="border-t border-gray-100 pt-4 space-y-3">
             <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center space-x-1">
               <i data-lucide="sun" class="w-4 h-4 text-tangerine"></i>
-              <span>Shadow & Lighting Corrections</span>
+              <span>Shadow & Lighting Adjustments</span>
             </h4>
             
             <div>
@@ -187,9 +198,9 @@
             </div>
           </div>
 
-          <!-- Output Background -->
+          <!-- Background Color Selection -->
           <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Target Background Color</label>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Target Passport Background</label>
             <div class="flex space-x-3">
               <button onclick="setBackgroundColor('#FFFFFF')" class="flex-1 py-2 border-2 border-ocean rounded-xl flex items-center justify-center space-x-2 text-xs font-semibold bg-white">
                 <span class="w-3 h-3 rounded-full border border-gray-300 bg-white"></span>
@@ -207,15 +218,15 @@
           <div class="relative border-4 border-ocean/20 rounded-2xl overflow-hidden shadow-inner bg-gray-100 max-w-[280px] w-full aspect-[35/45]">
             <canvas id="editor-canvas" class="w-full h-full object-contain cursor-grab active:cursor-grabbing"></canvas>
             <div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
-              <div class="w-[74%] h-[72%] border-2 border-dashed border-tangerine/80 rounded-full flex items-center justify-center">
-                <span class="text-[10px] bg-tangerine text-white px-2 py-0.5 rounded-full font-semibold shadow">Align Head Here</span>
+              <div class="w-[74%] h-[72%] border-2 border-dashed border-tangerine rounded-full flex items-center justify-center">
+                <span class="text-[10px] bg-tangerine text-white px-2 py-0.5 rounded-full font-semibold shadow">Align Face inside Circle</span>
               </div>
             </div>
           </div>
-          <span class="text-xs text-gray-400 mt-2">Click & drag image to move head center</span>
+          <span class="text-xs text-gray-400 mt-2">Click/Tap & drag photo to center head</span>
 
           <button onclick="processBackgroundRemoval()" class="w-full mt-6 py-3.5 bg-tangerine text-white font-bold rounded-2xl shadow-lg hover:opacity-90 transition-all flex items-center justify-center space-x-2">
-            <span>Remove Background & Generate White Wall</span>
+            <span>Remove Background & Paint White Wall</span>
             <i data-lucide="arrow-right" class="w-5 h-5"></i>
           </button>
         </div>
@@ -228,7 +239,7 @@
         <i data-lucide="sparkles" class="w-8 h-8"></i>
       </div>
       <h3 class="text-2xl font-bold text-ocean mb-2">Extracting Human Subject</h3>
-      <p id="processing-status" class="text-gray-500 text-sm mb-6">Cutting out subject and painting pure white passport background...</p>
+      <p id="processing-status" class="text-gray-500 text-sm mb-6">Replacing background wall with pure white passport backdrop...</p>
 
       <div class="max-w-md mx-auto">
         <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden mb-2">
@@ -241,7 +252,7 @@
     <!-- STEP 4: REVIEW & DOWNLOAD -->
     <section id="step-4" class="step-card bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 hidden">
       <h2 class="text-2xl font-bold text-ocean mb-2 text-center">Your Passport Photo is Ready!</h2>
-      <p class="text-gray-600 text-sm text-center mb-6">Subject successfully placed in front of a plain white passport background.</p>
+      <p class="text-gray-600 text-sm text-center mb-6">Subject successfully extracted and set against a plain white backdrop.</p>
 
       <div class="flex flex-col items-center">
         <div class="p-3 bg-white border border-gray-200 rounded-2xl shadow-md mb-6">
@@ -295,7 +306,7 @@
             <i id="faq-icon-1" data-lucide="chevron-down" class="w-5 h-5 text-tangerine transition-transform"></i>
           </button>
           <div id="faq-content-1" class="faq-accordion-content px-4 py-3 text-sm text-gray-600 bg-white">
-            No pictures are stored on any server. All image segmentation and standard scaling happen strictly inside your mobile device or web browser.
+            No pictures are stored on any server. All processing and background segmentation happen locally in your web browser.
           </div>
         </div>
 
@@ -305,7 +316,7 @@
             <i id="faq-icon-2" data-lucide="chevron-down" class="w-5 h-5 text-tangerine transition-transform"></i>
           </button>
           <div id="faq-content-2" class="faq-accordion-content px-4 py-3 text-sm text-gray-600 bg-white">
-            While this app formats photos to Singapore ICA specs (400x514 pixels, 70-80% head coverage, white background), final acceptance rests with the issuing government authority.
+            While this app formats photos to Singapore ICA specs (400x514 pixels, 70-80% head coverage, plain white background), final acceptance rests with the issuing authority.
           </div>
         </div>
 
@@ -315,7 +326,7 @@
             <i id="faq-icon-3" data-lucide="chevron-down" class="w-5 h-5 text-tangerine transition-transform"></i>
           </button>
           <div id="faq-content-3" class="faq-accordion-content px-4 py-3 text-sm text-gray-600 bg-white">
-            The application uses Google MediaPipe machine learning technology in WebGL to detect human contours, separate the subject, and construct a standardized plain white background canvas.
+            The application uses Google MediaPipe machine learning technology to isolate human contours and place the subject onto a plain white background.
           </div>
         </div>
       </div>
@@ -327,6 +338,8 @@
     let currentStep = 1;
     let originalImage = new Image();
     let selectedBgColor = '#FFFFFF';
+    let baseScale = 1.0;
+    let userZoom = 1.0;
     let panX = 0, panY = 0;
     let isDragging = false, startX, startY;
     let mediaStream = null;
@@ -351,12 +364,22 @@
       document.getElementById('main-progress-bar').style.width = `${(step / 5) * 100}%`;
     }
 
+    function resetImageTransform() {
+      userZoom = 1.0;
+      panX = 0;
+      panY = 0;
+      document.getElementById('zoom-slider').value = 1.0;
+      renderEditorCanvas();
+    }
+
     function handleFileSelect(e) {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = (event) => {
+        originalImage = new Image();
         originalImage.onload = () => {
+          resetImageTransform();
           goToStep(2);
           updatePresetSpecs();
         };
@@ -366,8 +389,10 @@
     }
 
     function loadSamplePhoto() {
+      originalImage = new Image();
       originalImage.crossOrigin = "anonymous";
       originalImage.onload = () => {
+        resetImageTransform();
         goToStep(2);
         updatePresetSpecs();
       };
@@ -399,7 +424,9 @@
       const ctx = canvas.getContext('2d');
       ctx.drawImage(video, 0, 0);
       stopCamera();
+      originalImage = new Image();
       originalImage.onload = () => {
+        resetImageTransform();
         goToStep(2);
         updatePresetSpecs();
       };
@@ -430,9 +457,16 @@
       ctx.fillStyle = selectedBgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      if (!originalImage.src) return;
+      if (!originalImage.src || !originalImage.width) return;
 
-      const zoom = parseFloat(document.getElementById('zoom-slider').value);
+      // Calculate base scale to fit high-resolution phone photos automatically
+      const scaleX = spec.width / originalImage.width;
+      const scaleY = spec.height / originalImage.height;
+      baseScale = Math.max(scaleX, scaleY);
+
+      userZoom = parseFloat(document.getElementById('zoom-slider').value);
+      const effectiveScale = baseScale * userZoom;
+
       const brightness = document.getElementById('brightness-slider').value;
       const contrast = document.getElementById('contrast-slider').value;
 
@@ -441,8 +475,8 @@
 
       ctx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
 
-      const drawW = originalImage.width * zoom;
-      const drawH = originalImage.height * zoom;
+      const drawW = originalImage.width * effectiveScale;
+      const drawH = originalImage.height * effectiveScale;
       const drawX = (canvas.width - drawW) / 2 + panX;
       const drawY = (canvas.height - drawH) / 2 + panY;
 
@@ -452,6 +486,8 @@
 
     function setupCanvasEvents() {
       const canvas = document.getElementById('editor-canvas');
+      
+      // Mouse dragging
       canvas.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - panX; startY = e.clientY - panY; });
       window.addEventListener('mousemove', (e) => {
         if (!isDragging) return;
@@ -460,9 +496,24 @@
         renderEditorCanvas();
       });
       window.addEventListener('mouseup', () => { isDragging = false; });
+
+      // Touch dragging for mobile phones
+      canvas.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          isDragging = true;
+          startX = e.touches[0].clientX - panX;
+          startY = e.touches[0].clientY - panY;
+        }
+      });
+      window.addEventListener('touchmove', (e) => {
+        if (!isDragging || e.touches.length !== 1) return;
+        panX = e.touches[0].clientX - startX;
+        panY = e.touches[0].clientY - startY;
+        renderEditorCanvas();
+      });
+      window.addEventListener('touchend', () => { isDragging = false; });
     }
 
-    // MediaPipe Selfie Segmentation for pure client-side background removal
     function processBackgroundRemoval() {
       goToStep(3);
       const bar = document.getElementById('processing-bar');
@@ -490,17 +541,19 @@
         bar.style.width = '80%';
         pct.innerText = '80%';
 
-        // Clear and draw white background
-        ctx.save();
+        // Clear canvas
         ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
-        ctx.fillStyle = selectedBgColor;
-        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-
-        // Mask out human subject onto white canvas
+        
+        // Draw segmented subject onto clean canvas
         ctx.drawImage(results.segmentationMask, 0, 0, finalCanvas.width, finalCanvas.height);
         ctx.globalCompositeOperation = 'source-in';
         ctx.drawImage(results.image, 0, 0, finalCanvas.width, finalCanvas.height);
-        ctx.restore();
+
+        // Composite target white background underneath
+        ctx.globalCompositeOperation = 'destination-over';
+        ctx.fillStyle = selectedBgColor;
+        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+        ctx.globalCompositeOperation = 'source-over';
 
         bar.style.width = '100%';
         pct.innerText = '100%';
@@ -508,7 +561,7 @@
       });
 
       selfieSegmentation.send({ image: editorCanvas }).catch((err) => {
-        console.error("MediaPipe error, rendering direct fallback:", err);
+        console.error("Segmentation fallback:", err);
         ctx.drawImage(editorCanvas, 0, 0);
         goToStep(4);
       });
