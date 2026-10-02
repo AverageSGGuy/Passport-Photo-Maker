@@ -12,8 +12,10 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- imgly Background Removal CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/@imgly/background-removal@1.5.5/dist/index.umd.min.js"></script>
+  <!-- Google MediaPipe Selfie Segmentation (Reliable WebGL ML on GitHub Pages) -->
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
+
   <script>
     tailwind.config = {
       theme: {
@@ -63,10 +65,10 @@
     <div class="mb-8">
       <div class="flex items-center justify-between text-xs sm:text-sm font-semibold text-gray-500 mb-2">
         <span id="step-label-1" class="text-ocean font-bold">1. Upload</span>
-        <span id="step-label-2">2. Specs & Edit</span>
+        <span id="step-label-2">2. Specs & Align</span>
         <span id="step-label-3">3. Processing</span>
         <span id="step-label-4">4. Download</span>
-        <span id="step-label-5">5. Nearby Print</span>
+        <span id="step-label-5">5. Print Shops</span>
       </div>
       <div class="w-full bg-gray-200 h-2 rounded-full overflow-hidden">
         <div id="main-progress-bar" class="bg-tangerine h-full w-1/5 transition-all duration-300"></div>
@@ -76,24 +78,21 @@
     <!-- STEP 1: UPLOAD OR TAKE PHOTO -->
     <section id="step-1" class="step-card bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100">
       <h1 class="text-2xl sm:text-3xl font-bold text-ocean mb-2">Create Your Passport Photo</h1>
-      <p class="text-gray-600 mb-6 text-sm sm:text-base">Take a picture with your phone in front of a plain wall, or upload an existing photo.</p>
+      <p class="text-gray-600 mb-6 text-sm sm:text-base">Take a picture in front of a wall with your phone or upload an existing photo.</p>
 
-      <!-- Guidelines Reminder Box -->
       <div class="bg-sky/20 border border-sky/50 rounded-2xl p-4 sm:p-5 mb-6 flex items-start space-x-3">
         <i data-lucide="info" class="w-6 h-6 text-ocean flex-shrink-0 mt-0.5"></i>
         <div class="text-sm text-gray-700">
-          <strong class="block text-ocean mb-1">Quick Guidelines for Best Results:</strong>
+          <strong class="block text-ocean mb-1">Quick Tips for Best Results:</strong>
           <ul class="list-disc pl-4 space-y-1">
-            <li>Stand in front of a light, plain wall in a well-lit room.</li>
-            <li>Look straight into the camera with a neutral facial expression.</li>
-            <li>Ensure no heavy shadows fall across your face or neck.</li>
+            <li>Stand in front of a plain wall in a brightly lit room.</li>
+            <li>Look straight into the camera with a neutral expression.</li>
+            <li>Keep hair away from face and eyes open.</li>
           </ul>
         </div>
       </div>
 
-      <!-- Upload Options -->
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <!-- File Drag & Drop Dropzone -->
         <label for="photo-input" class="cursor-pointer border-2 border-dashed border-ocean/30 hover:border-ocean bg-canvasbg/50 hover:bg-canvasbg transition-all rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center text-center group">
           <input type="file" id="photo-input" accept="image/*" class="hidden" onchange="handleFileSelect(event)">
           <div class="w-12 h-12 rounded-full bg-ocean/10 group-hover:bg-ocean text-ocean group-hover:text-white transition-all flex items-center justify-center mb-3">
@@ -103,21 +102,19 @@
           <span class="text-xs text-gray-500 mt-1">JPEG, PNG, HEIC up to 10MB</span>
         </label>
 
-        <!-- Live Camera Trigger -->
         <button onclick="startCamera()" class="border-2 border-dashed border-tangerine/30 hover:border-tangerine bg-tangerine/5 hover:bg-tangerine/10 transition-all rounded-2xl p-6 sm:p-8 flex flex-col items-center justify-center text-center group">
           <div class="w-12 h-12 rounded-full bg-tangerine/10 group-hover:bg-tangerine text-tangerine group-hover:text-white transition-all flex items-center justify-center mb-3">
             <i data-lucide="camera" class="w-6 h-6"></i>
           </div>
           <span class="font-semibold text-tangerine">Take Photo with Camera</span>
-          <span class="text-xs text-gray-500 mt-1">Use mobile or desktop webcam</span>
+          <span class="text-xs text-gray-500 mt-1">Use phone or laptop webcam</span>
         </button>
       </div>
 
-      <!-- Sample Photo Button -->
       <div class="mt-6 text-center">
         <button onclick="loadSamplePhoto()" class="inline-flex items-center space-x-2 text-xs font-semibold text-ocean hover:underline">
           <i data-lucide="sparkles" class="w-4 h-4 text-tangerine"></i>
-          <span>Don't have a photo? Try with a Sample Demo Photo</span>
+          <span>Try Demo Sample Photo</span>
         </button>
       </div>
     </section>
@@ -128,8 +125,6 @@
         <h3 class="text-xl font-bold text-ocean mb-4">Take Passport Photo</h3>
         <div class="relative w-full aspect-[3/4] bg-black rounded-2xl overflow-hidden mb-4">
           <video id="camera-video" autoplay playsinline class="w-full h-full object-cover"></video>
-          <!-- Face Silhouette Overlay -->
-          <div class="absolute inset-0 pointer-events-none flex items-center justify-center border-4 border-dashed border-white/50 rounded-full my-12 mx-16"></div>
         </div>
         <div class="flex justify-center space-x-3">
           <button onclick="stopCamera()" class="px-5 py-2.5 rounded-full border border-gray-300 text-gray-600 font-semibold hover:bg-gray-100">Cancel</button>
@@ -141,41 +136,34 @@
       </div>
     </div>
 
-    <!-- STEP 2: SPECS, CANVAS ALIGNMENT & SHADOW ADJUSTMENTS -->
+    <!-- STEP 2: SPECS, ALIGNMENT & SHADOW CONTROLS -->
     <section id="step-2" class="step-card bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 hidden">
-      <h2 class="text-2xl font-bold text-ocean mb-2">Configure & Align Photo</h2>
-      <p class="text-gray-600 text-sm mb-6">Select your country standards and adjust your photo positioning & lighting.</p>
+      <h2 class="text-2xl font-bold text-ocean mb-2">Align & Adjust Photo</h2>
+      <p class="text-gray-600 text-sm mb-6">Select your target country specs and fine-tune your portrait positioning.</p>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- Controls Side -->
         <div class="space-y-5">
-          <!-- Preset Country Selection -->
+          <!-- Country Preset Dropdown -->
           <div>
             <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Country Standard</label>
             <select id="country-select" onchange="updatePresetSpecs()" class="w-full bg-canvasbg border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ocean font-medium">
-              <option value="sg">Singapore (ICA) - 400x514 px / 35x45 mm</option>
-              <option value="us">United States - 2x2 inches (600x600 px)</option>
-              <option value="uk">United Kingdom / Schengen - 35x45 mm</option>
-              <option value="ca">Canada - 50x70 mm</option>
+              <option value="sg" selected>🇸🇬 Singapore (ICA) — 400×514 px (Digital MyICA)</option>
+              <option value="us">🇺🇸 United States — 2×2 inches (600×600 px)</option>
+              <option value="uk">🇬🇧 UK / Schengen — 35×45 mm (413×531 px)</option>
+              <option value="ca">🇨🇦 Canada — 50×70 mm (590×826 px)</option>
             </select>
           </div>
 
-          <!-- Spec Details Banner -->
           <div id="spec-info-box" class="bg-pomelo/20 border border-pomelo/50 rounded-xl p-3 text-xs text-leather">
-            <strong>Singapore (ICA) Requirements:</strong> 400x514 pixels, head size 70-80% of frame (25-35mm), plain white background.
+            <strong>Singapore (ICA) Specs:</strong> 400x514 pixels, face covers 70-80% of frame (25-35mm chin to crown), plain white background.
           </div>
 
-          <!-- Zoom & Pan Controls -->
           <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Face Zoom & Alignment</label>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Face Zoom</label>
             <input type="range" id="zoom-slider" min="0.5" max="2.5" step="0.05" value="1" oninput="renderEditorCanvas()" class="w-full accent-ocean">
-            <div class="flex justify-between text-xs text-gray-400 mt-1">
-              <span>Zoom Out</span>
-              <span>Zoom In</span>
-            </div>
           </div>
 
-          <!-- Lighting & Shadow Controls -->
+          <!-- Lighting Sliders -->
           <div class="border-t border-gray-100 pt-4 space-y-3">
             <h4 class="text-xs font-bold text-gray-700 uppercase tracking-wider flex items-center space-x-1">
               <i data-lucide="sun" class="w-4 h-4 text-tangerine"></i>
@@ -197,60 +185,50 @@
               </div>
               <input type="range" id="contrast-slider" min="70" max="150" value="100" oninput="renderEditorCanvas()" class="w-full accent-tangerine">
             </div>
-
-            <div>
-              <div class="flex justify-between text-xs text-gray-600 mb-1">
-                <span>Shadow Fill</span>
-                <span id="val-shadow">0</span>
-              </div>
-              <input type="range" id="shadow-slider" min="0" max="50" value="0" oninput="renderEditorCanvas()" class="w-full accent-tangerine">
-            </div>
           </div>
 
-          <!-- Background Color -->
+          <!-- Output Background -->
           <div>
-            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Background Color</label>
+            <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Target Background Color</label>
             <div class="flex space-x-3">
               <button onclick="setBackgroundColor('#FFFFFF')" class="flex-1 py-2 border-2 border-ocean rounded-xl flex items-center justify-center space-x-2 text-xs font-semibold bg-white">
                 <span class="w-3 h-3 rounded-full border border-gray-300 bg-white"></span>
-                <span>White</span>
+                <span>Pure White</span>
               </button>
-              <button onclick="setBackgroundColor('#EBF3FA')" class="flex-1 py-2 border border-gray-200 rounded-xl flex items-center justify-center space-x-2 text-xs font-semibold bg-sky/20">
-                <span class="w-3 h-3 rounded-full border border-sky bg-sky/30"></span>
+              <button onclick="setBackgroundColor('#F0F4F8')" class="flex-1 py-2 border border-gray-200 rounded-xl flex items-center justify-center space-x-2 text-xs font-semibold bg-gray-100">
+                <span class="w-3 h-3 rounded-full border border-gray-300 bg-gray-200"></span>
                 <span>Off-White</span>
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Canvas Preview Side -->
         <div class="flex flex-col items-center">
           <div class="relative border-4 border-ocean/20 rounded-2xl overflow-hidden shadow-inner bg-gray-100 max-w-[280px] w-full aspect-[35/45]">
             <canvas id="editor-canvas" class="w-full h-full object-contain cursor-grab active:cursor-grabbing"></canvas>
-            <!-- Head Overlay Target -->
             <div class="absolute inset-0 pointer-events-none flex flex-col items-center justify-center">
-              <div class="w-[72%] h-[68%] border-2 border-dashed border-tangerine/70 rounded-full flex items-center justify-center">
-                <span class="text-[10px] bg-tangerine/80 text-white px-2 py-0.5 rounded-full font-semibold">Align Face Here</span>
+              <div class="w-[74%] h-[72%] border-2 border-dashed border-tangerine/80 rounded-full flex items-center justify-center">
+                <span class="text-[10px] bg-tangerine text-white px-2 py-0.5 rounded-full font-semibold shadow">Align Head Here</span>
               </div>
             </div>
           </div>
-          <span class="text-xs text-gray-400 mt-2">Drag image to adjust head center</span>
+          <span class="text-xs text-gray-400 mt-2">Click & drag image to move head center</span>
 
-          <button onclick="proceedToProcessing()" class="w-full mt-6 py-3.5 bg-tangerine text-white font-bold rounded-2xl shadow-lg hover:opacity-90 transition-all flex items-center justify-center space-x-2">
-            <span>Process & Remove Background</span>
+          <button onclick="processBackgroundRemoval()" class="w-full mt-6 py-3.5 bg-tangerine text-white font-bold rounded-2xl shadow-lg hover:opacity-90 transition-all flex items-center justify-center space-x-2">
+            <span>Remove Background & Generate White Wall</span>
             <i data-lucide="arrow-right" class="w-5 h-5"></i>
           </button>
         </div>
       </div>
     </section>
 
-    <!-- STEP 3: PROCESSING (PROGRESS BAR) -->
+    <!-- STEP 3: PROCESSING -->
     <section id="step-3" class="step-card bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-gray-100 text-center hidden">
       <div class="w-16 h-16 rounded-full bg-sky/30 text-ocean mx-auto flex items-center justify-center mb-4 animate-pulse">
         <i data-lucide="sparkles" class="w-8 h-8"></i>
       </div>
-      <h3 class="text-2xl font-bold text-ocean mb-2">Processing Your Photo</h3>
-      <p id="processing-status" class="text-gray-500 text-sm mb-6">Removing background & applying Singapore ICA color profile...</p>
+      <h3 class="text-2xl font-bold text-ocean mb-2">Extracting Human Subject</h3>
+      <p id="processing-status" class="text-gray-500 text-sm mb-6">Cutting out subject and painting pure white passport background...</p>
 
       <div class="max-w-md mx-auto">
         <div class="w-full bg-gray-200 h-3 rounded-full overflow-hidden mb-2">
@@ -263,15 +241,13 @@
     <!-- STEP 4: REVIEW & DOWNLOAD -->
     <section id="step-4" class="step-card bg-white p-6 sm:p-8 rounded-3xl shadow-sm border border-gray-100 hidden">
       <h2 class="text-2xl font-bold text-ocean mb-2 text-center">Your Passport Photo is Ready!</h2>
-      <p class="text-gray-600 text-sm text-center mb-6">Review your processed photo below and choose your preferred download format.</p>
+      <p class="text-gray-600 text-sm text-center mb-6">Subject successfully placed in front of a plain white passport background.</p>
 
       <div class="flex flex-col items-center">
-        <!-- Rendered Final Result Canvas Preview -->
-        <div class="p-3 bg-canvasbg border border-gray-200 rounded-2xl shadow-md mb-6">
+        <div class="p-3 bg-white border border-gray-200 rounded-2xl shadow-md mb-6">
           <canvas id="final-canvas" class="rounded-lg max-w-[240px] shadow-sm"></canvas>
         </div>
 
-        <!-- Download Options Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-md">
           <button onclick="downloadSinglePhoto()" class="py-3.5 px-4 bg-ocean text-white font-bold rounded-2xl shadow hover:opacity-90 transition-all flex items-center justify-center space-x-2">
             <i data-lucide="download" class="w-5 h-5"></i>
@@ -285,7 +261,7 @@
         </div>
 
         <button onclick="goToStep(5)" class="mt-6 text-sm text-leather font-semibold hover:underline flex items-center space-x-1">
-          <span>Unhappy with results? Find a nearby photo shop to print or retake</span>
+          <span>Unhappy with results? Find a nearby photo studio to print or retake</span>
           <i data-lucide="map-pin" class="w-4 h-4 text-tangerine"></i>
         </button>
       </div>
@@ -297,14 +273,13 @@
       <p class="text-gray-600 text-sm mb-6">Enter your postal code to locate passport photo printing studios near you.</p>
 
       <div class="flex flex-col sm:flex-row gap-3 mb-6">
-        <input type="text" id="postal-input" placeholder="Enter Postal Code or Location (e.g., 049318)" class="flex-1 bg-canvasbg border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ocean">
+        <input type="text" id="postal-input" placeholder="Enter Postal Code or Area (e.g., 049318)" class="flex-1 bg-canvasbg border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-ocean">
         <button onclick="searchNearbyShops()" class="bg-ocean text-white font-bold px-6 py-3 rounded-xl hover:opacity-90 transition-all flex items-center justify-center space-x-2">
           <i data-lucide="search" class="w-4 h-4"></i>
           <span>Search</span>
         </button>
       </div>
 
-      <!-- Google Map Frame -->
       <div class="w-full h-72 rounded-2xl overflow-hidden border border-gray-200 shadow-inner bg-gray-100">
         <iframe id="google-map-frame" class="w-full h-full border-0" loading="lazy" allowfullscreen src="https://maps.google.com/maps?q=passport%20photo%20printing%20singapore&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
       </div>
@@ -314,36 +289,33 @@
     <section class="mt-12 bg-white/80 p-6 sm:p-8 rounded-3xl border border-gray-200/60">
       <h3 class="text-xl font-bold font-serif-header text-ocean mb-6 text-center">Frequently Asked Questions</h3>
       <div class="space-y-4 max-w-2xl mx-auto">
-        <!-- FAQ 1 -->
         <div class="border border-gray-200 rounded-2xl overflow-hidden">
           <button onclick="toggleFaq(1)" class="w-full p-4 text-left font-semibold text-ocean flex justify-between items-center bg-canvasbg/40 hover:bg-canvasbg">
             <span>Are my photos stored on any server?</span>
             <i id="faq-icon-1" data-lucide="chevron-down" class="w-5 h-5 text-tangerine transition-transform"></i>
           </button>
           <div id="faq-content-1" class="faq-accordion-content px-4 py-3 text-sm text-gray-600 bg-white">
-            No pictures are stored on any server. All processing, background segmentation, and canvas scaling happen directly inside your web browser.
+            No pictures are stored on any server. All image segmentation and standard scaling happen strictly inside your mobile device or web browser.
           </div>
         </div>
 
-        <!-- FAQ 2 -->
         <div class="border border-gray-200 rounded-2xl overflow-hidden">
           <button onclick="toggleFaq(2)" class="w-full p-4 text-left font-semibold text-ocean flex justify-between items-center bg-canvasbg/40 hover:bg-canvasbg">
-            <span>Are photos guaranteed to be approved?</span>
+            <span>Are photos guaranteed to be approved by MyICA?</span>
             <i id="faq-icon-2" data-lucide="chevron-down" class="w-5 h-5 text-tangerine transition-transform"></i>
           </button>
           <div id="faq-content-2" class="faq-accordion-content px-4 py-3 text-sm text-gray-600 bg-white">
-            While this app formats your photos according to official parameters (such as Singapore ICA's 400x514px and head height guidelines), final approval is strictly subject to the authority of each country's passport office.
+            While this app formats photos to Singapore ICA specs (400x514 pixels, 70-80% head coverage, white background), final acceptance rests with the issuing government authority.
           </div>
         </div>
 
-        <!-- FAQ 3 -->
         <div class="border border-gray-200 rounded-2xl overflow-hidden">
           <button onclick="toggleFaq(3)" class="w-full p-4 text-left font-semibold text-ocean flex justify-between items-center bg-canvasbg/40 hover:bg-canvasbg">
             <span>How does the web application work?</span>
             <i id="faq-icon-3" data-lucide="chevron-down" class="w-5 h-5 text-tangerine transition-transform"></i>
           </button>
           <div id="faq-content-3" class="faq-accordion-content px-4 py-3 text-sm text-gray-600 bg-white">
-            The web app leverages client-side WebAssembly and machine learning algorithms (`@imgly/background-removal`) to isolate the person from the background image right inside your phone or desktop browser.
+            The application uses Google MediaPipe machine learning technology in WebGL to detect human contours, separate the subject, and construct a standardized plain white background canvas.
           </div>
         </div>
       </div>
@@ -352,30 +324,25 @@
   </main>
 
   <script>
-    // State variables
     let currentStep = 1;
     let originalImage = new Image();
-    let segmentedBlob = null;
     let selectedBgColor = '#FFFFFF';
     let panX = 0, panY = 0;
     let isDragging = false, startX, startY;
     let mediaStream = null;
 
-    // Preset configurations
     const PRESETS = {
-      sg: { width: 400, height: 514, name: 'Singapore (ICA)', desc: '400x514 pixels, head size 70-80% (25-35mm), plain white background.' },
-      us: { width: 600, height: 600, name: 'United States', desc: '600x600 pixels (2x2 inches @ 300 DPI), head size 50-69%.' },
+      sg: { width: 400, height: 514, name: 'Singapore (ICA)', desc: '400x514 pixels, face size 70-80% (25-35mm), plain white background.' },
+      us: { width: 600, height: 600, name: 'United States', desc: '600x600 pixels (2x2 inches @ 300 DPI), face size 50-69%.' },
       uk: { width: 413, height: 531, name: 'United Kingdom / Schengen', desc: '35x45 mm ratio (413x531 px @ 300 DPI).' },
       ca: { width: 590, height: 826, name: 'Canada', desc: '50x70 mm ratio (590x826 px @ 300 DPI).' }
     };
 
-    // Initialize Lucide icons
     document.addEventListener("DOMContentLoaded", () => {
       lucide.createIcons();
       setupCanvasEvents();
     });
 
-    // Step navigation
     function goToStep(step) {
       currentStep = step;
       document.querySelectorAll('.step-card').forEach((el, idx) => {
@@ -384,7 +351,6 @@
       document.getElementById('main-progress-bar').style.width = `${(step / 5) * 100}%`;
     }
 
-    // Load file
     function handleFileSelect(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -399,7 +365,6 @@
       reader.readAsDataURL(file);
     }
 
-    // Demo Sample Photo
     function loadSamplePhoto() {
       originalImage.crossOrigin = "anonymous";
       originalImage.onload = () => {
@@ -409,7 +374,6 @@
       originalImage.src = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80";
     }
 
-    // Camera Controls
     function startCamera() {
       const modal = document.getElementById('camera-modal');
       const video = document.getElementById('camera-video');
@@ -419,7 +383,7 @@
           mediaStream = stream;
           video.srcObject = stream;
         })
-        .catch(err => alert("Camera access denied or unavailable."));
+        .catch(() => alert("Camera permission unavailable."));
     }
 
     function stopCamera() {
@@ -442,10 +406,9 @@
       originalImage.src = canvas.toDataURL('image/jpeg');
     }
 
-    // Spec & Preset Selection
     function updatePresetSpecs() {
       const key = document.getElementById('country-select').value;
-      const spec = PRESETS[key];
+      const spec = PRESETS[key] || PRESETS.sg;
       document.getElementById('spec-info-box').innerHTML = `<strong>${spec.name} Requirements:</strong> ${spec.desc}`;
       renderEditorCanvas();
     }
@@ -455,17 +418,15 @@
       renderEditorCanvas();
     }
 
-    // Render interactive editor canvas
     function renderEditorCanvas() {
       const canvas = document.getElementById('editor-canvas');
       const ctx = canvas.getContext('2d');
       const key = document.getElementById('country-select').value;
-      const spec = PRESETS[key];
+      const spec = PRESETS[key] || PRESETS.sg;
 
       canvas.width = spec.width;
       canvas.height = spec.height;
 
-      // Fill background
       ctx.fillStyle = selectedBgColor;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -474,14 +435,11 @@
       const zoom = parseFloat(document.getElementById('zoom-slider').value);
       const brightness = document.getElementById('brightness-slider').value;
       const contrast = document.getElementById('contrast-slider').value;
-      const shadow = document.getElementById('shadow-slider').value;
 
       document.getElementById('val-brightness').innerText = `${brightness}%`;
       document.getElementById('val-contrast').innerText = `${contrast}%`;
-      document.getElementById('val-shadow').innerText = shadow;
 
-      // Canvas Filter
-      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) drop-shadow(0px 0px ${shadow}px rgba(255,255,255,0.8))`;
+      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%)`;
 
       const drawW = originalImage.width * zoom;
       const drawH = originalImage.height * zoom;
@@ -492,7 +450,6 @@
       ctx.filter = 'none';
     }
 
-    // Setup Drag Pan on Canvas
     function setupCanvasEvents() {
       const canvas = document.getElementById('editor-canvas');
       canvas.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - panX; startY = e.clientY - panY; });
@@ -505,82 +462,71 @@
       window.addEventListener('mouseup', () => { isDragging = false; });
     }
 
-    // Processing Background Segmentation
-    async function proceedToProcessing() {
+    // MediaPipe Selfie Segmentation for pure client-side background removal
+    function processBackgroundRemoval() {
       goToStep(3);
       const bar = document.getElementById('processing-bar');
       const pct = document.getElementById('processing-percentage');
-      const status = document.getElementById('processing-status');
 
-      bar.style.width = '20%';
-      pct.innerText = '20%';
-      status.innerText = 'Loading AI segmentation engine...';
+      bar.style.width = '30%';
+      pct.innerText = '30%';
 
-      try {
-        const editorCanvas = document.getElementById('editor-canvas');
-        const dataUrl = editorCanvas.toDataURL('image/png');
-
-        bar.style.width = '50%';
-        pct.innerText = '50%';
-        status.innerText = 'Extracting human subject & removing background...';
-
-        // Perform client-side background removal
-        const blob = await imglyRemoveBackground(dataUrl);
-        const processedUrl = URL.createObjectURL(blob);
-
-        bar.style.width = '90%';
-        pct.innerText = '90%';
-        status.innerText = 'Finishing passport standards scaling...';
-
-        const finalImg = new Image();
-        finalImg.onload = () => {
-          renderFinalResult(finalImg);
-          bar.style.width = '100%';
-          pct.innerText = '100%';
-          setTimeout(() => goToStep(4), 500);
-        };
-        finalImg.src = processedUrl;
-      } catch (err) {
-        console.error("Background removal fallback:", err);
-        // Fallback if model fails: render canvas as is
-        const finalImg = new Image();
-        finalImg.onload = () => {
-          renderFinalResult(finalImg);
-          goToStep(4);
-        };
-        finalImg.src = document.getElementById('editor-canvas').toDataURL('image/png');
-      }
-    }
-
-    function renderFinalResult(img) {
+      const editorCanvas = document.getElementById('editor-canvas');
       const finalCanvas = document.getElementById('final-canvas');
-      const ctx = finalCanvas.getContext('2d');
       const key = document.getElementById('country-select').value;
-      const spec = PRESETS[key];
+      const spec = PRESETS[key] || PRESETS.sg;
 
       finalCanvas.width = spec.width;
       finalCanvas.height = spec.height;
+      const ctx = finalCanvas.getContext('2d');
 
-      ctx.fillStyle = selectedBgColor;
-      ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
-      ctx.drawImage(img, 0, 0, spec.width, spec.height);
+      const selfieSegmentation = new SelfieSegmentation({
+        locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
+      });
+
+      selfieSegmentation.setOptions({ modelSelection: 1 });
+
+      selfieSegmentation.onResults((results) => {
+        bar.style.width = '80%';
+        pct.innerText = '80%';
+
+        // Clear and draw white background
+        ctx.save();
+        ctx.clearRect(0, 0, finalCanvas.width, finalCanvas.height);
+        ctx.fillStyle = selectedBgColor;
+        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+        // Mask out human subject onto white canvas
+        ctx.drawImage(results.segmentationMask, 0, 0, finalCanvas.width, finalCanvas.height);
+        ctx.globalCompositeOperation = 'source-in';
+        ctx.drawImage(results.image, 0, 0, finalCanvas.width, finalCanvas.height);
+        ctx.restore();
+
+        bar.style.width = '100%';
+        pct.innerText = '100%';
+        setTimeout(() => goToStep(4), 400);
+      });
+
+      selfieSegmentation.send({ image: editorCanvas }).catch((err) => {
+        console.error("MediaPipe error, rendering direct fallback:", err);
+        ctx.drawImage(editorCanvas, 0, 0);
+        goToStep(4);
+      });
     }
 
-    // Download Single Photo
     function downloadSinglePhoto() {
       const finalCanvas = document.getElementById('final-canvas');
       const link = document.createElement('a');
-      link.download = 'passport-photo-singapore-ica.jpg';
+      link.download = 'singapore-ica-passport-photo.jpg';
       link.href = finalCanvas.toDataURL('image/jpeg', 0.95);
       link.click();
     }
 
-    // Download 4x6 Print Sheet (1200 x 1800 px)
     function downloadPrintSheet() {
       const finalCanvas = document.getElementById('final-canvas');
       const sheet = document.createElement('canvas');
-      sheet.width = 1200;  // 4 inches @ 300 DPI
-      sheet.height = 1800; // 6 inches @ 300 DPI
+      sheet.width = 1200;  // 4x6 inch @ 300 DPI
+      sheet.height = 1800; 
       const ctx = sheet.getContext('2d');
 
       ctx.fillStyle = '#FFFFFF';
@@ -588,8 +534,7 @@
 
       const targetW = 350;
       const targetH = 450;
-      const cols = 2;
-      const rows = 3;
+      const cols = 2, rows = 3;
       const startX = (sheet.width - (cols * targetW + 100)) / 2;
       const startY = (sheet.height - (rows * targetH + 100)) / 2;
 
@@ -598,8 +543,7 @@
           const x = startX + c * (targetW + 50);
           const y = startY + r * (targetH + 50);
           ctx.drawImage(finalCanvas, x, y, targetW, targetH);
-          ctx.strokeStyle = '#CCCCCC';
-          ctx.lineWidth = 1;
+          ctx.strokeStyle = '#E2E8F0';
           ctx.strokeRect(x, y, targetW, targetH);
         }
       }
@@ -610,14 +554,12 @@
       link.click();
     }
 
-    // Search Nearby Shops
     function searchNearbyShops() {
       const query = document.getElementById('postal-input').value || 'passport photo printing singapore';
       const frame = document.getElementById('google-map-frame');
       frame.src = `https://maps.google.com/maps?q=${encodeURIComponent(query)}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
     }
 
-    // Toggle FAQ
     function toggleFaq(id) {
       const content = document.getElementById(`faq-content-${id}`);
       const icon = document.getElementById(`faq-icon-${id}`);
