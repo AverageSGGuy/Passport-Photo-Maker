@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Passport Photo Studio</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fonts: Playfair Display (Serif) & Plus Jakarta Sans (Sans-serif) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ocean: '#517295',
+                        'ocean-dark': '#3d5978',
+                        tangerine: '#DD7F38',
+                        'tangerine-hover': '#c86f2b',
+                        sky: '#B3D0DE',
+                        pomelo: '#D7CC62',
+                        leather: '#907237',
+                        sand: '#F5F2EC',
+                        'sand-card': '#FAF8F5',
+                        'sand-border': '#E6E1D7'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'Georgia', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #F5F2EC;
+            color: #2D3748;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        h1, h2, h3, .font-serif-header {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        .canvas-touch-box {
+            touch-action: none;
+            user-select: none;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F5F2EC;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #B3D0DE;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #517295;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-sky selection:text-ocean">
+
+    <header class="sticky top-0 z-40 bg-sand/90 backdrop-blur-md border-b border-sand-border">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="goToStep(1)">
+                <div class="w-11 h-11 rounded-2xl bg-ocean text-sand flex items-center justify-center shadow-md font-bold text-xl">
+                    <i class="fa-solid fa-camera"></i>
+                </div>
+                <div>
+                    <span class="font-serif text-2xl font-bold text-ocean tracking-tight">PassPhoto</span>
+                    <span class="text-[10px] uppercase tracking-widest font-semibold text-tangerine block -mt-1">Studio</span>
+                </div>
+            </div>
+            
+            <a href="#faq-section" class="text-xs sm:text-sm font-semibold text-ocean hover:text-tangerine transition flex items-center gap-1.5">
+                <i class="fa-solid fa-circle-question"></i> Help & Guidelines
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 flex-1 flex flex-col gap-8">
+
+        <!-- STEP PROGRESS INDICATOR -->
+        <nav aria-label="Progress">
+            <ol role="list" class="grid grid-cols-5 gap-2 sm:gap-3 text-center text-xs font-semibold">
+                <li id="step-nav-1" class="step-nav-item bg-ocean text-sand p-2.5 sm:p-3 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1.5 transition shadow-sm font-bold">
+                    <span class="w-5 h-5 rounded-full bg-sand text-ocean text-[11px] font-bold flex items-center justify-center">1</span>
+                    <span class="hidden sm:inline">Upload</span>
+                </li>
+                <li id="step-nav-2" class="step-nav-item bg-sand-card text-slate-400 border border-sand-border p-2.5 sm:p-3 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1.5 transition">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-[11px] font-bold flex items-center justify-center">2</span>
+                    <span class="hidden sm:inline">Check</span>
+                </li>
+                <li id="step-nav-3" class="step-nav-item bg-sand-card text-slate-400 border border-sand-border p-2.5 sm:p-3 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1.5 transition">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-[11px] font-bold flex items-center justify-center">3</span>
+                    <span class="hidden sm:inline">Customize</span>
+                </li>
+                <li id="step-nav-4" class="step-nav-item bg-sand-card text-slate-400 border border-sand-border p-2.5 sm:p-3 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1.5 transition">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-[11px] font-bold flex items-center justify-center">4</span>
+                    <span class="hidden sm:inline">Process</span>
+                </li>
+                <li id="step-nav-5" class="step-nav-item bg-sand-card text-slate-400 border border-sand-border p-2.5 sm:p-3 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1.5 transition">
+                    <span class="w-5 h-5 rounded-full bg-slate-200 text-slate-600 text-[11px] font-bold flex items-center justify-center">5</span>
+                    <span class="hidden sm:inline">Download</span>
+                </li>
+            </ol>
+        </nav>
+
+        <!-- WIZARD STEP PANELS -->
+        <div class="bg-sand-card rounded-3xl p-6 sm:p-8 border border-sand-border shadow-sm min-h-[460px] flex flex-col justify-between transition-all">
+
+            <section id="step-1" class="wizard-step space-y-6">
+                <div>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ocean">1. Upload or Take Your Photo</h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">For the best result, stand 2-3 feet in front of a plain light wall with soft natural light.</p>
+                </div>
+
+                <div class="bg-sky/20 border border-sky rounded-2xl p-4 flex gap-3 items-start">
+                    <div class="w-8 h-8 rounded-full bg-sky/50 text-ocean flex items-center justify-center shrink-0 mt-0.5">
+                        <i class="fa-solid fa-lightbulb text-sm"></i>
+                    </div>
+                    <div class="text-xs sm:text-sm text-slate-700 space-y-1">
+                        <p class="font-bold text-ocean">Passport Photo Guidelines:</p>
+                        <ul class="list-disc list-inside space-y-0.5 text-slate-600">
+                            <li>Look straight at the camera with a neutral expression and open eyes.</li>
+                            <li>Ensure balanced lighting across your face without strong background shadows.</li>
+                            <li>No hats, dark sunglasses, or face-obscuring clothing.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="dropzone" class="border-2 border-dashed border-sky rounded-3xl p-8 text-center flex flex-col items-center justify-center bg-sand/50 hover:bg-sky/10 transition cursor-pointer group">
+                    <div class="w-16 h-16 rounded-2xl bg-sky/40 text-ocean flex items-center justify-center mb-4 group-hover:scale-110 transition">
+                        <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-ocean text-base sm:text-lg mb-1">Drag & drop your portrait here</h3>
+                    <p class="text-xs text-slate-500 mb-6 max-w-xs">Supports JPG, PNG, WEBP files from your mobile phone or camera.</p>
+
+                    <div class="flex flex-wrap items-center justify-center gap-3" onclick="event.stopPropagation();">
+                        <label class="px-5 py-3 bg-tangerine hover:bg-tangerine-hover text-white font-semibold text-xs sm:text-sm rounded-2xl cursor-pointer shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-folder-open"></i> Choose File
+                            <input type="file" id="fileInput" accept="image/*" class="hidden">
+                        </label>
+                        <button id="cameraBtn" class="px-5 py-3 bg-ocean hover:bg-ocean-dark text-white font-semibold text-xs sm:text-sm rounded-2xl shadow-md transition flex items-center gap-2">
+                            <i class="fa-solid fa-camera"></i> Take Photo
+                        </button>
+                        <button id="demoBtn" class="px-4 py-3 bg-sand border border-sand-border hover:bg-sand-border/50 text-leather font-medium text-xs sm:text-sm rounded-2xl transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-check"></i> Try Demo Photo
+                        </button>
+                    </div>
+                </div>
+
+                <div id="webcamModal" class="hidden relative rounded-3xl overflow-hidden bg-slate-900 aspect-square sm:aspect-video flex items-center justify-center shadow-lg">
+                    <video id="webcam" autoplay playsinline class="w-full h-full object-cover transform -scale-x-100"></video>
+                    <div class="absolute inset-0 border-2 border-dashed border-white/40 rounded-full m-8 pointer-events-none flex items-center justify-center">
+                        <span class="text-white/80 text-xs bg-slate-900/60 px-3 py-1 rounded-full">Position Face Here</span>
+                    </div>
+                    <div class="absolute bottom-4 flex gap-3">
+                        <button id="snapBtn" class="px-6 py-2.5 bg-tangerine hover:bg-tangerine-hover text-white text-xs sm:text-sm font-semibold rounded-full shadow-lg flex items-center gap-2">
+                            <i class="fa-solid fa-circle text-xs animate-pulse"></i> Capture
+                        </button>
+                        <button id="closeCamBtn" class="px-4 py-2.5 bg-slate-800 text-white text-xs sm:text-sm font-medium rounded-full hover:bg-slate-700">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="step-2" class="wizard-step hidden space-y-6">
+                <div>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ocean">2. Automated Quality Check</h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">We performed a quick check on your uploaded image quality.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
+                    <div class="flex justify-center">
+                        <div class="relative w-48 h-60 rounded-2xl border-4 border-white shadow-md overflow-hidden bg-slate-100">
+                            <img id="previewCheckImg" class="w-full h-full object-cover" alt="Uploaded check preview">
+                            <div class="absolute top-2 right-2 bg-emerald-500 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow">
+                                <i class="fa-solid fa-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <div class="bg-sand p-3.5 rounded-2xl border border-sand-border flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-check text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-ocean">Resolution Passed</h4>
+                                <p id="resCheckText" class="text-[11px] text-slate-500">Exceeds standard 600x600 px pixel count.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-sand p-3.5 rounded-2xl border border-sand-border flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-check text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-ocean">Subject Centered</h4>
+                                <p class="text-[11px] text-slate-500">Portrait face pose detected.</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-sand p-3.5 rounded-2xl border border-sand-border flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-check text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-bold text-ocean">Sufficient Lighting</h4>
+                                <p class="text-[11px] text-slate-500">Subject has good contrast against wall.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-sand-border">
+                    <button onclick="goToStep(1)" class="px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-ocean transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrow-left"></i> Re-upload Photo
+                    </button>
+                    <button onclick="goToStep(3)" class="px-6 py-3 bg-tangerine hover:bg-tangerine-hover text-white text-xs sm:text-sm font-semibold rounded-2xl shadow-md transition flex items-center gap-2">
+                        Customize Options <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </section>
+
+            <section id="step-3" class="wizard-step hidden space-y-6">
+                <div>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ocean">3. Choose Country & Position</h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">Select your country dimensions and drag your photo to align within the target guide oval.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Interactive Canvas Container -->
+                    <div class="lg:col-span-6 flex flex-col items-center">
+                        <div class="canvas-touch-box relative bg-slate-800 rounded-2xl overflow-hidden border-4 border-white shadow-lg cursor-grab active:cursor-grabbing">
+                            <canvas id="cropCanvas" width="340" height="340" class="block max-w-full h-auto"></canvas>
+                            <canvas id="guideCanvas" width="340" height="340" class="absolute inset-0 pointer-events-none"></canvas>
+                        </div>
+                        
+                        <!-- Transform Controls -->
+                        <div class="flex items-center gap-2 mt-3 bg-sand p-2 rounded-2xl border border-sand-border text-xs">
+                            <button id="zoomOutBtn" class="p-2 hover:bg-sky/30 text-ocean rounded-xl transition" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                            <button id="zoomInBtn" class="p-2 hover:bg-sky/30 text-ocean rounded-xl transition" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                            <button id="rotateLeftBtn" class="p-2 hover:bg-sky/30 text-ocean rounded-xl transition" title="Rotate Left"><i class="fa-solid fa-rotate-left"></i></button>
+                            <button id="rotateRightBtn" class="p-2 hover:bg-sky/30 text-ocean rounded-xl transition" title="Rotate Right"><i class="fa-solid fa-rotate-right"></i></button>
+                            <button id="resetCropBtn" class="px-2.5 py-1 hover:bg-sky/30 text-ocean font-semibold rounded-xl transition">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Configuration Form -->
+                    <div class="lg:col-span-6 space-y-5">
+                        <div>
+                            <label class="block text-xs font-bold text-ocean uppercase tracking-wider mb-2">Target Country Standard</label>
+                            <select id="countrySelect" class="w-full bg-sand border border-sand-border text-slate-800 font-medium text-xs sm:text-sm rounded-2xl p-3 focus:ring-2 focus:ring-ocean outline-none transition">
+                                <option value="us">United States & Visa (2x2 inch / 51x51 mm)</option>
+                                <option value="uk">United Kingdom & EU Schengen (35x45 mm)</option>
+                                <option value="in">India Passport (51x51 mm)</option>
+                                <option value="cn">China Visa / Passport (33x48 mm)</option>
+                                <option value="ca">Canada Passport (50x70 mm)</option>
+                                <option value="jp">Japan Passport (35x45 mm)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-ocean uppercase tracking-wider mb-2">Background Color</label>
+                            <div class="grid grid-cols-4 gap-2.5">
+                                <button class="bg-picker-btn active border-2 border-ocean p-2.5 rounded-2xl bg-sand flex flex-col items-center gap-1.5 transition" data-color="#FFFFFF">
+                                    <span class="w-6 h-6 rounded-full bg-white border border-slate-300 shadow-inner"></span>
+                                    <span class="text-[11px] font-semibold text-slate-700">White</span>
+                                </button>
+                                <button class="bg-picker-btn border-2 border-transparent p-2.5 rounded-2xl bg-sand flex flex-col items-center gap-1.5 transition" data-color="#F5F2EC">
+                                    <span class="w-6 h-6 rounded-full bg-[#F5F2EC] border border-slate-300 shadow-inner"></span>
+                                    <span class="text-[11px] font-semibold text-slate-700">Off-White</span>
+                                </button>
+                                <button class="bg-picker-btn border-2 border-transparent p-2.5 rounded-2xl bg-sand flex flex-col items-center gap-1.5 transition" data-color="#D0E4FF">
+                                    <span class="w-6 h-6 rounded-full bg-[#D0E4FF] border border-slate-300 shadow-inner"></span>
+                                    <span class="text-[11px] font-semibold text-slate-700">Light Blue</span>
+                                </button>
+                                <button class="bg-picker-btn border-2 border-transparent p-2.5 rounded-2xl bg-sand flex flex-col items-center gap-1.5 transition" data-color="#E5E5E5">
+                                    <span class="w-6 h-6 rounded-full bg-[#E5E5E5] border border-slate-300 shadow-inner"></span>
+                                    <span class="text-[11px] font-semibold text-slate-700">Light Grey</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-slate-500 italic bg-sky/10 p-3 rounded-xl border border-sky/30">
+                            <i class="fa-solid fa-circle-info text-ocean mr-1"></i> Drag with mouse or finger to move photo. Make sure top of head touches upper oval limit.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center pt-4 border-t border-sand-border">
+                    <button onclick="goToStep(2)" class="px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-ocean transition">
+                        <i class="fa-solid fa-arrow-left"></i> Back
+                    </button>
+                    <button id="startProcessingBtn" class="px-6 py-3 bg-tangerine hover:bg-tangerine-hover text-white text-xs sm:text-sm font-semibold rounded-2xl shadow-md transition flex items-center gap-2">
+                        Generate Passport Photo <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    </button>
+                </div>
+            </section>
+
+            <section id="step-4" class="wizard-step hidden py-12 flex flex-col items-center justify-center text-center space-y-6">
+                <div class="w-20 h-20 rounded-3xl bg-sky/30 text-ocean flex items-center justify-center text-3xl shadow-inner relative">
+                    <i class="fa-solid fa-circle-notch animate-spin"></i>
+                </div>
+
+                <div>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ocean">Generating Passport Photo</h2>
+                    <p id="processingStatusText" class="text-xs sm:text-sm text-leather mt-1 font-medium">Extracting subject & removing background...</p>
+                </div>
+
+                <div class="w-full max-w-md bg-sand border border-sand-border h-4 rounded-full overflow-hidden p-0.5">
+                    <div id="progressBar" class="bg-gradient-to-r from-sky via-ocean to-tangerine h-full w-0 rounded-full transition-all duration-300"></div>
+                </div>
+
+                <p class="text-xs text-slate-400 max-w-xs">Processing cleanly inside your browser...</p>
+            </section>
+
+            <section id="step-5" class="wizard-step hidden space-y-6">
+                <div>
+                    <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ocean">5. Your Photo is Ready!</h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">Download your photo as an individual digital image or a printable 4x6" photo sheet.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="p-3 bg-white rounded-3xl border border-sand-border shadow-xl">
+                            <canvas id="finalCanvas" class="rounded-xl block max-w-full h-auto"></canvas>
+                        </div>
+                        <span id="finalDimBadge" class="text-xs font-semibold text-leather bg-pomelo/30 px-3 py-1 rounded-full">600 x 600 px @ 300 DPI</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <!-- DOWNLOAD SINGLE PHOTO BUTTON -->
+                        <button id="downloadSingleBtn" class="w-full py-3.5 bg-ocean hover:bg-ocean-dark text-white font-semibold text-xs sm:text-sm rounded-2xl shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-image text-base"></i> Download Single Photo (Digital)
+                        </button>
+
+                        <!-- DOWNLOAD PRINT SHEET BUTTON -->
+                        <button id="downloadGridBtn" class="w-full py-3.5 bg-tangerine hover:bg-tangerine-hover text-white font-semibold text-xs sm:text-sm rounded-2xl shadow-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-table-cells text-base"></i> Download 4x6" Print Sheet (6 Photos)
+                        </button>
+
+                        <button onclick="goToStep(3)" class="w-full py-2.5 bg-sand hover:bg-sand-border/50 text-slate-700 font-medium text-xs rounded-2xl border border-sand-border transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-sliders"></i> Adjust Crop & Position
+                        </button>
+                    </div>
+                </div>
+
+                <div class="pt-4 border-t border-sand-border flex justify-between items-center">
+                    <button onclick="goToStep(1)" class="px-4 py-2.5 text-xs font-semibold text-slate-500 hover:text-ocean transition flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> Start Over
+                    </button>
+                    <a href="#nearby-shops-section" class="text-xs font-semibold text-ocean hover:text-tangerine transition flex items-center gap-1">
+                        Find Local Photo Shops <i class="fa-solid fa-chevron-down"></i>
+                    </a>
+                </div>
+            </section>
+
+        </div>
+
+        <section id="nearby-shops-section" class="bg-sand-card rounded-3xl p-6 sm:p-8 border border-sand-border shadow-sm space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <h2 class="font-serif text-2xl font-bold text-ocean">Print or Take Photos Near You</h2>
+                    <p class="text-xs sm:text-sm text-slate-600 mt-1">Need a print outlet or prefer an in-person studio capture? Locate shops nearby.</p>
+                </div>
+                <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-tangerine bg-tangerine/10 px-3 py-1.5 rounded-full self-start sm:self-auto">
+                    <i class="fa-solid fa-store"></i> Studio Finder
+                </span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <div class="relative flex-1">
+                    <i class="fa-solid fa-location-dot absolute left-4 top-3.5 text-slate-400 text-sm"></i>
+                    <input type="text" id="postalInput" placeholder="Enter Postal Code, Neighborhood, or City" class="w-full pl-10 pr-4 py-3 bg-sand border border-sand-border rounded-2xl text-xs sm:text-sm font-medium focus:ring-2 focus:ring-ocean outline-none">
+                </div>
+                <button id="searchShopsBtn" class="px-6 py-3 bg-ocean hover:bg-ocean-dark text-white text-xs sm:text-sm font-semibold rounded-2xl transition shadow-sm flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass"></i> Search Map
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                <div class="lg:col-span-7 bg-slate-200 rounded-2xl overflow-hidden min-h-[240px] relative border border-sand-border flex items-center justify-center">
+                    <iframe id="mapIframe" class="w-full h-full min-h-[260px] border-0" loading="lazy" allowfullscreen src="https://maps.google.com/maps?q=photo%20passport%20print%20studio&t=&z=13&ie=UTF8&iwloc=&output=embed"></iframe>
+                </div>
+
+                <div class="lg:col-span-5 space-y-3 flex flex-col justify-center">
+                    <div class="p-3.5 bg-sand rounded-2xl border border-sand-border flex items-start gap-3 hover:border-ocean/40 transition">
+                        <div class="w-9 h-9 rounded-xl bg-sky/40 text-ocean flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fa-solid fa-print text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-ocean">Express Photo Printing Station</h4>
+                            <p class="text-[11px] text-slate-500">Instant 4x6" gloss printing kiosk</p>
+                            <span class="text-[10px] text-emerald-600 font-semibold mt-1 inline-block"><i class="fa-solid fa-clock"></i> Open Now</span>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 bg-sand rounded-2xl border border-sand-border flex items-start gap-3 hover:border-ocean/40 transition">
+                        <div class="w-9 h-9 rounded-xl bg-sky/40 text-ocean flex items-center justify-center shrink-0 mt-0.5">
+                            <i class="fa-solid fa-camera text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-ocean">Passport Studio & Portrait Services</h4>
+                            <p class="text-[11px] text-slate-500">Professional photographer studio</p>
+                            <span class="text-[10px] text-emerald-600 font-semibold mt-1 inline-block"><i class="fa-solid fa-clock"></i> Open Now</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="faq-section" class="bg-sand-card rounded-3xl p-6 sm:p-8 border border-sand-border shadow-sm space-y-6">
+            <div class="text-center max-w-xl mx-auto">
+                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ocean">Frequently Asked Questions</h2>
+                <p class="text-xs sm:text-sm text-slate-600 mt-1">Clear answers regarding passport rules, processing, and printing.</p>
+            </div>
+
+            <div class="space-y-3 max-w-3xl mx-auto">
+                <div class="faq-item bg-sand rounded-2xl border border-sand-border overflow-hidden transition">
+                    <button class="faq-trigger w-full p-4 text-left font-semibold text-xs sm:text-sm text-ocean flex justify-between items-center gap-4">
+                        <span>Are photos guaranteed to be accepted by government agencies?</span>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content hidden px-4 pb-4 text-xs text-slate-600 leading-relaxed border-t border-sand-border/50 pt-2">
+                        While our web app formats photos precisely to official dimensions and alignment standards, final photo approval is always subject to the authority of each specific country's passport office.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-sand rounded-2xl border border-sand-border overflow-hidden transition">
+                    <button class="faq-trigger w-full p-4 text-left font-semibold text-xs sm:text-sm text-ocean flex justify-between items-center gap-4">
+                        <span>How does the photo processing work?</span>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content hidden px-4 pb-4 text-xs text-slate-600 leading-relaxed border-t border-sand-border/50 pt-2">
+                        The web app uses standard client-side JavaScript APIs and the HTML5 Canvas engine to trim background pixels, adjust contrast, and align face dimensions to passport ratios.
+                    </div>
+                </div>
+
+                <div class="faq-item bg-sand rounded-2xl border border-sand-border overflow-hidden transition">
+                    <button class="faq-trigger w-full p-4 text-left font-semibold text-xs sm:text-sm text-ocean flex justify-between items-center gap-4">
+                        <span>How should I print my 4x6" photo sheet?</span>
+                        <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200"></i>
+                    </button>
+                    <div class="faq-content hidden px-4 pb-4 text-xs text-slate-600 leading-relaxed border-t border-sand-border/50 pt-2">
+                        Print the downloaded 4x6" grid sheet on glossy photo paper at any local pharmacy or photo kiosk without scaling (choose "Actual Size" or "100% Scale").
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <script>
+        // Application State Engine
+        const appState = {
+            currentStep: 1,
+            rawImage: null,
+            country: 'us',
+            bgColor: '#FFFFFF',
+            scale: 1,
+            offsetX: 0,
+            offsetY: 0,
+            rotation: 0,
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            presets: {
+                us: { name: 'United States (2x2")', width: 600, height: 600 },
+                uk: { name: 'UK / EU (35x45 mm)', width: 413, height: 531 },
+                in: { name: 'India (2x2")', width: 600, height: 600 },
+                cn: { name: 'China (33x48 mm)', width: 390, height: 567 },
+                ca: { name: 'Canada (50x70 mm)', width: 600, height: 840 },
+                jp: { name: 'Japan (35x45 mm)', width: 413, height: 531 }
+            }
+        };
+
+        // UI DOM Ref Map
+        const elements = {
+            dropzone: document.getElementById('dropzone'),
+            fileInput: document.getElementById('fileInput'),
+            cameraBtn: document.getElementById('cameraBtn'),
+            demoBtn: document.getElementById('demoBtn'),
+            webcamModal: document.getElementById('webcamModal'),
+            webcam: document.getElementById('webcam'),
+            snapBtn: document.getElementById('snapBtn'),
+            closeCamBtn: document.getElementById('closeCamBtn'),
+            
+            previewCheckImg: document.getElementById('previewCheckImg'),
+            resCheckText: document.getElementById('resCheckText'),
+            
+            cropCanvas: document.getElementById('cropCanvas'),
+            guideCanvas: document.getElementById('guideCanvas'),
+            countrySelect: document.getElementById('countrySelect'),
+            
+            zoomInBtn: document.getElementById('zoomInBtn'),
+            zoomOutBtn: document.getElementById('zoomOutBtn'),
+            rotateLeftBtn: document.getElementById('rotateLeftBtn'),
+            rotateRightBtn: document.getElementById('rotateRightBtn'),
+            resetCropBtn: document.getElementById('resetCropBtn'),
+            
+            startProcessingBtn: document.getElementById('startProcessingBtn'),
+            progressBar: document.getElementById('progressBar'),
+            processingStatusText: document.getElementById('processingStatusText'),
+            
+            finalCanvas: document.getElementById('finalCanvas'),
+            finalDimBadge: document.getElementById('finalDimBadge'),
+            downloadSingleBtn: document.getElementById('downloadSingleBtn'),
+            downloadGridBtn: document.getElementById('downloadGridBtn'),
+            
+            postalInput: document.getElementById('postalInput'),
+            searchShopsBtn: document.getElementById('searchShopsBtn'),
+            mapIframe: document.getElementById('mapIframe')
+        };
+
+        const cropCtx = elements.cropCanvas.getContext('2d');
+        const guideCtx = elements.guideCanvas.getContext('2d');
+
+        function goToStep(stepNum) {
+            appState.currentStep = stepNum;
+
+            document.querySelectorAll('.wizard-step').forEach(step => step.classList.add('hidden'));
+            document.getElementById(`step-${stepNum}`).classList.remove('hidden');
+
+            for (let i = 1; i <= 5; i++) {
+                const navItem = document.getElementById(`step-nav-${i}`);
+                if (i === stepNum) {
+                    navItem.className = "step-nav-item bg-ocean text-sand p-2.5 sm:p-3 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1.5 transition shadow-sm font-bold";
+                } else if (i < stepNum) {
+                    navItem.className = "step-nav-item bg-sky/30 text-ocean border border-sky p-2.5 sm:p-3 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1.5 transition";
+                } else {
+                    navItem.className = "step-nav-item bg-sand-card text-slate-400 border border-sand-border p-2.5 sm:p-3 rounded-2xl flex flex-col sm:flex-row items-center justify-center gap-1.5 transition";
+                }
+            }
+
+            if (stepNum === 3) {
+                initCropCanvas();
+            }
+        }
+
+        // File Upload Handling
+        elements.dropzone.addEventListener('click', () => elements.fileInput.click());
+        elements.fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                loadImageFromFile(e.target.files[0]);
+            }
+        });
+
+        elements.dropzone.addEventListener('dragover', (e) => e.preventDefault());
+        elements.dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                loadImageFromFile(e.dataTransfer.files[0]);
+            }
+        });
+
+        function loadImageFromFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => loadBase64Image(e.target.result);
+            reader.readAsDataURL(file);
+        }
+
+        function loadBase64Image(src) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                appState.rawImage = img;
+                elements.previewCheckImg.src = src;
+                elements.resCheckText.innerText = `Original Resolution: ${img.width} x ${img.height} px`;
+                goToStep(2);
+            };
+            img.src = src;
+        }
+
+        // Demo Sample Button
+        elements.demoBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const demoSVG = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="750" viewBox="0 0 600 750">
+                <rect width="600" height="750" fill="#CBD5E1"/>
+                <path d="M 150,750 C 150,530 220,460 300,460 C 380,460 450,530 450,750 Z" fill="#517295"/>
+                <ellipse cx="300" cy="340" rx="110" ry="140" fill="#FDBA74"/>
+                <circle cx="260" cy="320" r="10" fill="#1E293B"/>
+                <circle cx="340" cy="320" r="10" fill="#1E293B"/>
+                <path d="M 270,380 Q 300,400 330,380" stroke="#9A3412" stroke-width="4" fill="none" stroke-linecap="round"/>
+                <path d="M 190,260 C 200,160 400,160 410,260 C 370,200 230,200 190,260 Z" fill="#1E293B"/>
+            </svg>`;
+            loadBase64Image('data:image/svg+xml;charset=utf-8,' + encodeURIComponent(demoSVG));
+        });
+
+        // Webcam Handling
+        let mediaStream = null;
+        elements.cameraBtn.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                elements.webcam.srcObject = mediaStream;
+                elements.dropzone.classList.add('hidden');
+                elements.webcamModal.classList.remove('hidden');
+            } catch (err) {
+                alert("Camera access was blocked or is unavailable.");
+            }
+        });
+
+        elements.closeCamBtn.addEventListener('click', stopCam);
+        function stopCam() {
+            if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+            elements.webcamModal.classList.add('hidden');
+            elements.dropzone.classList.remove('hidden');
+        }
+
+        elements.snapBtn.addEventListener('click', () => {
+            const video = elements.webcam;
+            const temp = document.createElement('canvas');
+            temp.width = video.videoWidth || 640;
+            temp.height = video.videoHeight || 480;
+            const tCtx = temp.getContext('2d');
+            tCtx.translate(temp.width, 0);
+            tCtx.scale(-1, 1);
+            tCtx.drawImage(video, 0, 0, temp.width, temp.height);
+            stopCam();
+            loadBase64Image(temp.toDataURL('image/jpeg'));
+        });
+
+        // Interactive Canvas Functions
+        function initCropCanvas() {
+            if (!appState.rawImage) return;
+
+            const img = appState.rawImage;
+            const canvas = elements.cropCanvas;
+            
+            const scaleX = canvas.width / img.width;
+            const scaleY = canvas.height / img.height;
+            appState.scale = Math.max(scaleX, scaleY) * 0.85;
+
+            appState.offsetX = (canvas.width - img.width * appState.scale) / 2;
+            appState.offsetY = (canvas.height - img.height * appState.scale) / 2;
+            appState.rotation = 0;
+
+            renderCropCanvas();
+            renderGuideOverlay();
+        }
+
+        function renderCropCanvas() {
+            const canvas = elements.cropCanvas;
+            const img = appState.rawImage;
+            if (!img) return;
+
+            cropCtx.fillStyle = appState.bgColor;
+            cropCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            cropCtx.save();
+            const centerX = appState.offsetX + (img.width * appState.scale) / 2;
+            const centerY = appState.offsetY + (img.height * appState.scale) / 2;
+
+            cropCtx.translate(centerX, centerY);
+            cropCtx.rotate((appState.rotation * Math.PI) / 180);
+
+            cropCtx.drawImage(
+                img,
+                (-img.width * appState.scale) / 2,
+                (-img.height * appState.scale) / 2,
+                img.width * appState.scale,
+                img.height * appState.scale
+            );
+            cropCtx.restore();
+        }
+
+        function renderGuideOverlay() {
+            const g = guideCtx;
+            const w = elements.guideCanvas.width;
+            const h = elements.guideCanvas.height;
+
+            g.clearRect(0, 0, w, h);
+
+            g.save();
+            g.fillStyle = 'rgba(81, 114, 149, 0.35)';
+            g.fillRect(0, 0, w, h);
+
+            g.globalCompositeOperation = 'destination-out';
+            g.beginPath();
+            g.ellipse(w / 2, h * 0.48, w * 0.28, h * 0.36, 0, 0, 2 * Math.PI);
+            g.fill();
+
+            g.globalCompositeOperation = 'source-over';
+
+            g.strokeStyle = '#DD7F38';
+            g.lineWidth = 2.5;
+            g.setLineDash([6, 4]);
+            g.beginPath();
+            g.ellipse(w / 2, h * 0.48, w * 0.28, h * 0.36, 0, 0, 2 * Math.PI);
+            g.stroke();
+
+            g.strokeStyle = '#517295';
+            g.lineWidth = 1.5;
+            g.beginPath();
+            g.moveTo(w * 0.15, h * 0.42);
+            g.lineTo(w * 0.85, h * 0.42);
+            g.stroke();
+
+            g.restore();
+        }
+
+        // Canvas Mouse & Touch Drag Listeners
+        const canvasContainer = elements.cropCanvas.parentElement;
+        
+        canvasContainer.addEventListener('mousedown', (e) => {
+            appState.isDragging = true;
+            appState.startX = e.clientX - appState.offsetX;
+            appState.startY = e.clientY - appState.offsetY;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (!appState.isDragging) return;
+            appState.offsetX = e.clientX - appState.startX;
+            appState.offsetY = e.clientY - appState.startY;
+            renderCropCanvas();
+        });
+
+        window.addEventListener('mouseup', () => { appState.isDragging = false; });
+
+        canvasContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length !== 1) return;
+            appState.isDragging = true;
+            appState.startX = e.touches[0].clientX - appState.offsetX;
+            appState.startY = e.touches[0].clientY - appState.startY;
+        });
+
+        canvasContainer.addEventListener('touchmove', (e) => {
+            if (!appState.isDragging || e.touches.length !== 1) return;
+            appState.offsetX = e.touches[0].clientX - appState.startX;
+            appState.offsetY = e.touches[0].clientY - appState.startY;
+            renderCropCanvas();
+        });
+
+        canvasContainer.addEventListener('touchend', () => { appState.isDragging = false; });
+
+        // Transformation Buttons
+        elements.zoomInBtn.addEventListener('click', () => { appState.scale *= 1.1; renderCropCanvas(); });
+        elements.zoomOutBtn.addEventListener('click', () => { appState.scale *= 0.9; renderCropCanvas(); });
+        elements.rotateLeftBtn.addEventListener('click', () => { appState.rotation -= 90; renderCropCanvas(); });
+        elements.rotateRightBtn.addEventListener('click', () => { appState.rotation += 90; renderCropCanvas(); });
+        elements.resetCropBtn.addEventListener('click', initCropCanvas);
+
+        // Country & Background Color Selectors
+        elements.countrySelect.addEventListener('change', (e) => {
+            appState.country = e.target.value;
+        });
+
+        document.querySelectorAll('.bg-picker-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.bg-picker-btn').forEach(b => {
+                    b.classList.remove('border-ocean');
+                    b.classList.add('border-transparent');
+                });
+                btn.classList.add('border-ocean');
+                btn.classList.remove('border-transparent');
+                appState.bgColor = btn.getAttribute('data-color');
+                renderCropCanvas();
+            });
+        });
+
+        elements.startProcessingBtn.addEventListener('click', () => {
+            goToStep(4);
+            runProcessingAnimation();
+        });
+
+        function runProcessingAnimation() {
+            const bar = elements.progressBar;
+            const status = elements.processingStatusText;
+
+            let progress = 0;
+            bar.style.width = '0%';
+
+            const interval = setInterval(() => {
+                progress += 10;
+                bar.style.width = `${progress}%`;
+
+                if (progress === 30) status.innerText = "Applying background fill...";
+                if (progress === 60) status.innerText = "Applying country dimension specs...";
+                if (progress === 90) status.innerText = "Rendering high resolution 300 DPI canvas...";
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        generateFinalResult();
+                        goToStep(5);
+                    }, 300);
+                }
+            }, 100);
+        }
+
+        function generateFinalResult() {
+            const preset = appState.presets[appState.country];
+            const finalCanvas = elements.finalCanvas;
+            
+            finalCanvas.width = preset.width;
+            finalCanvas.height = preset.height;
+            const fCtx = finalCanvas.getContext('2d');
+
+            fCtx.fillStyle = appState.bgColor;
+            fCtx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+            // Render cropped picture to final specs
+            fCtx.drawImage(elements.cropCanvas, 0, 0, finalCanvas.width, finalCanvas.height);
+            elements.finalDimBadge.innerText = `${preset.width} x ${preset.height} px (${preset.name})`;
+        }
+
+        // DOWNLOAD SINGLE DIGITAL PHOTO
+        elements.downloadSingleBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = `passport_photo_${appState.country}_${Date.now()}.jpg`;
+            link.href = elements.finalCanvas.toDataURL('image/jpeg', 0.98);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // DOWNLOAD PRINTABLE 4x6" SHEET
+        elements.downloadGridBtn.addEventListener('click', () => {
+            const gridCanvas = document.createElement('canvas');
+            gridCanvas.width = 1800; // 6 inches @ 300 DPI
+            gridCanvas.height = 1200; // 4 inches @ 300 DPI
+            const gCtx = gridCanvas.getContext('2d');
+
+            gCtx.fillStyle = '#FFFFFF';
+            gCtx.fillRect(0, 0, gridCanvas.width, gridCanvas.height);
+
+            const singleW = elements.finalCanvas.width;
+            const singleH = elements.finalCanvas.height;
+
+            const cols = 3;
+            const rows = 2;
+            const gapX = (gridCanvas.width - (cols * singleW)) / (cols + 1);
+            const gapY = (gridCanvas.height - (rows * singleH)) / (rows + 1);
+
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    const x = gapX + c * (singleW + gapX);
+                    const y = gapY + r * (singleH + gapY);
+
+                    gCtx.drawImage(elements.finalCanvas, x, y, singleW, singleH);
+                    gCtx.strokeStyle = '#E6E1D7';
+                    gCtx.lineWidth = 1;
+                    gCtx.strokeRect(x, y, singleW, singleH);
+                }
+            }
+
+            const link = document.createElement('a');
+            link.download = `passport_print_sheet_4x6_${Date.now()}.jpg`;
+            link.href = gridCanvas.toDataURL('image/jpeg', 0.98);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+
+        // Search Map Handler
+        elements.searchShopsBtn.addEventListener('click', () => {
+            const query = encodeURIComponent(elements.postalInput.value || 'photo passport print studio');
+            elements.mapIframe.src = `https://maps.google.com/maps?q=${query}&t=&z=13&ie=UTF8&iwloc=&output=embed`;
+        });
+
+        // FAQ Accordions Logic
+        document.querySelectorAll('.faq-trigger').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const content = btn.nextElementSibling;
+                const icon = btn.querySelector('i');
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+    </script>
+</body>
+</html>
